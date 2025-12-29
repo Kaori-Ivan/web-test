@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web 功能測試頁</title>
+  <style>
+    body{
+      font-family: system-ui, "Microsoft JhengHei", sans-serif;
+      background:#f5f7fb;
+      margin:0;
+      padding:16px;
+    }
+    .card{
+      background:#fff;
+      border-radius:14px;
+      padding:16px;
+      max-width:480px;
+      margin:auto;
+      box-shadow:0 6px 16px rgba(0,0,0,.08);
+    }
+    h1{font-size:18px;margin-top:0}
+    input,button,textarea{
+      width:100%;
+      font-size:16px;
+      padding:12px;
+      margin-top:10px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      box-sizing:border-box;
+    }
+    button{
+      background:#2563eb;
+      color:#fff;
+      border:none;
+    }
+    button.secondary{
+      background:#475569;
+    }
+    .log{
+      margin-top:12px;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+      min-height:80px;
+      font-size:14px;
+      white-space:pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>📱 Web 功能測試頁</h1>
+
+    <input id="inputText" placeholder="輸入任何文字（測試用）">
+
+    <button onclick="add()">新增資料</button>
+    <button class="secondary" onclick="exportText()">顯示全部資料（模擬匯出）</button>
+
+    <div class="log" id="log"></div>
+  </div>
+
+<script>
+  const KEY = "web_test_data";
+  let data = [];
+
+  function load(){
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      data = JSON.parse(raw);
+      render();
+    }
+  }
+
+  function save(){
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  function add(){
+    const v = document.getElementById("inputText").value.trim();
+    if(!v){
+      alert("請輸入一些文字");
+      return;
+    }
+    data.push({
+      time: new Date().toLocaleString(),
+      value: v
+    });
+    save();
+    render();
+    document.getElementById("inputText").value = "";
+  }
+
+  function render(){
+    const log = document.getElementById("log");
+    log.textContent = data.map(
+      (d,i)=>`${i+1}. [${d.time}] ${d.value}`
+    ).join("\n");
+  }
+
+  function exportText(){
+    alert("資料如下，請確認畫面是否正確");
+    render();
+  }
+
+  load();
+</script>
+</body>
+</html>
