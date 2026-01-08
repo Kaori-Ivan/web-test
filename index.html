@@ -2,10 +2,14 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
+  <!-- ✅ 手機關鍵 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>加班預報系統（手機分享版）</title>
+  <title>FCBU 加班預報系統</title>
 
+  <!-- ================================================= -->
+  <!-- ✅ 手機 / RWD 外掛樣式（不影響原作者） -->
+  <!-- ================================================= -->
   <style>
     * { box-sizing: border-box; }
 
@@ -14,210 +18,142 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont,
                    "Segoe UI", "Microsoft JhengHei", Arial, sans-serif;
       background: #f4f6fb;
-      color: #1f2937;
     }
 
+    /* 外層包裝（只包，不改） */
     .app-container {
-      max-width: 900px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 16px;
     }
 
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    /* 手機補救 */
+    @media (max-width: 768px) {
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      input, select, button {
+        width: 100%;
+        min-height: 44px;
+        font-size: 16px;
+      }
     }
 
-    h1 {
-      margin: 0 0 12px;
-      text-align: center;
-      font-size: 22px;
-    }
-
-    label {
-      font-weight: 600;
+    /* 分享按鈕樣式（獨立） */
+    .share-btn {
       margin-top: 12px;
-      display: block;
-    }
-
-    input, button {
-      width: 100%;
-      margin-top: 6px;
-      padding: 12px 14px;
-      font-size: 16px;
+      padding: 12px;
       border-radius: 10px;
-      border: 1px solid #d1d5db;
-    }
-
-    button {
       border: none;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-primary {
-      background: #2563eb;
-      color: #fff;
-      margin-top: 16px;
-    }
-
-    .btn-share {
       background: #16a34a;
       color: #fff;
-      margin-top: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
     }
-
-    .btn-primary:hover { background: #1d4ed8; }
-    .btn-share:hover { background: #15803d; }
-
-    .table-wrap {
-      margin-top: 20px;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 520px;
-    }
-
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #e5e7eb;
-      font-size: 14px;
-      text-align: left;
-    }
-
-    th {
-      background: #f1f5f9;
-      font-weight: 700;
-    }
-
-    @media (max-width: 768px) {
-      h1 { font-size: 18px; }
-      .card { padding: 16px; }
-      table { font-size: 13px; }
+    .share-btn:hover {
+      background: #15803d;
     }
   </style>
 </head>
 
 <body>
-  <div class="app-container">
-    <div class="card">
 
-      <h1>加班預報系統</h1>
+<!-- ================================================= -->
+<!-- ✅ 外層容器（唯一新增的 HTML 結構） -->
+<!-- ================================================= -->
+<div class="app-container">
 
-      <label>工號</label>
-      <input id="emp" placeholder="請輸入工號" />
+  <!-- ================================================= -->
+  <!-- 🔽【貼這裡】原作者的 HTML 內容（幾乎整段貼） -->
+  <!-- ================================================= -->
 
-      <label>預計加班時數</label>
-      <input id="hours" type="number" placeholder="例如 2" />
+  <!--
+    ⚠️ 請把原本 <body> 裡的內容，
+    ⚠️ 原封不動貼在這裡
+    ⚠️ 不要刪她的 id / class
+  -->
 
-      <button class="btn-primary" onclick="submitData()">送出</button>
+  <!-- 例： -->
+  <!-- 原作者 HTML START -->
+  <!--
+    <h1>加班預報系統</h1>
+    <form>...</form>
+    <table>...</table>
+  -->
+  <!-- 原作者 HTML END -->
 
-      <button class="btn-share" onclick="shareResult()">📤 分享結果（LINE / Mail）</button>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>工號</th>
-              <th>時數</th>
-              <th>時間</th>
-            </tr>
-          </thead>
-          <tbody id="dataTable"></tbody>
-        </table>
-      </div>
+  <!-- ================================================= -->
+  <!-- ✅ 新增功能：分享（不影響原流程） -->
+  <!-- ================================================= -->
+  <button class="share-btn" onclick="shareResult()">
+    📤 分享結果（LINE / Mail）
+  </button>
 
-    </div>
-  </div>
+</div>
 
-  <script>
-    /* ===== 儲存 key（之後可換成原作者的） ===== */
-    const STORAGE_KEY = "OT_FORECAST_DATA";
+<!-- ================================================= -->
+<!-- 🔽【貼這裡】原作者的 <script>（整段保留） -->
+<!-- ================================================= -->
+<script>
+  /*
+    ⚠️ 請把她原本的 JS（function、localStorage、流程）
+    ⚠️ 整段貼在這裡
+    ⚠️ 不要改內容
+  */
+</script>
 
-    function submitData(){
-      const emp = document.getElementById("emp").value.trim();
-      const hours = document.getElementById("hours").value;
+<!-- ================================================= -->
+<!-- ✅ 新增 JS：分享功能（完全獨立） -->
+<!-- ================================================= -->
+<script>
+  /* ⚠️ 請確認 key 是否與原作者一致 */
+  const SHARE_STORAGE_KEY = "OT_FORECAST_DATA"; 
+  // ↑ 如果她用別的 key，這裡改名稱即可
 
-      if(!emp || !hours){
-        alert("請填寫完整資料");
-        return;
-      }
+  function buildShareText(){
+    const data = JSON.parse(localStorage.getItem(SHARE_STORAGE_KEY) || "[]");
 
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      data.push({
-        emp,
-        hours,
-        time: new Date().toLocaleString()
-      });
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      document.getElementById("emp").value = "";
-      document.getElementById("hours").value = "";
-      render();
+    if(data.length === 0){
+      return "目前尚無加班預報資料。";
     }
 
-    function render(){
-      const tbody = document.getElementById("dataTable");
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    let text = "【FCBU 加班預報結果】\n\n";
+    data.forEach((row, i) => {
+      text += `${i+1}. 工號：${row.emp || ""}｜時數：${row.hours || ""}｜時間：${row.time || ""}\n`;
+    });
 
-      tbody.innerHTML = "";
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${row.emp}</td>
-          <td>${row.hours}</td>
-          <td>${row.time}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+    return text;
+  }
+
+  function shareResult(){
+    const text = buildShareText();
+
+    if(navigator.share){
+      navigator.share({
+        title: "加班預報結果",
+        text: text
+      }).catch(()=>{});
+    }else{
+      fallbackShare(text);
     }
+  }
 
-    /* ===== 分享功能 ===== */
-    function buildShareText(){
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  function fallbackShare(text){
+    const mailto =
+      `mailto:?subject=${encodeURIComponent("加班預報結果")}&body=${encodeURIComponent(text)}`;
+    window.location.href = mailto;
 
-      if(data.length === 0){
-        return "目前尚未填寫任何加班預報資料。";
-      }
-
-      let text = "【加班預報結果】\n\n";
-      data.forEach((row, i) => {
-        text += `${i+1}. 工號：${row.emp}｜時數：${row.hours}｜時間：${row.time}\n`;
-      });
-
-      return text;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(text);
+      alert("已複製內容，可貼到 LINE / Mail");
     }
+  }
+</script>
 
-    function shareResult(){
-      const text = buildShareText();
-
-      if(navigator.share){
-        navigator.share({
-          title: "加班預報結果",
-          text: text
-        }).catch(()=>{});
-      }else{
-        fallbackShare(text);
-      }
-    }
-
-    function fallbackShare(text){
-      const mailto = `mailto:?subject=${encodeURIComponent("加班預報結果")}&body=${encodeURIComponent(text)}`;
-      window.location.href = mailto;
-
-      if(navigator.clipboard){
-        navigator.clipboard.writeText(text).then(()=>{
-          alert("已複製分享內容，可貼到 LINE 或 Mail");
-        });
-      }
-    }
-
-    render();
-  </script>
 </body>
 </html>
