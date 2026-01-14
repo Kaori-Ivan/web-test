@@ -207,9 +207,9 @@
       color:#173a61;
     }
     .toast.show{ opacity:1; transform: translateY(0); }
-    @media (max-width: 600px){
+  @media (max-width: 600px){
 
-  /* ===== 既有設定（你原本的，保留） ===== */
+  /* ===== 基本手機調整 ===== */
   .wrap{
     padding:10px;
   }
@@ -223,41 +223,38 @@
     padding:12px;
   }
   table{
-    min-width: 760px; /* 手機橫滑表格 */
+    min-width: 760px;
   }
 
-  /* ===== 工作內容：11 個選項 → 2 個並排 ===== */
+  /* ===== 工作內容：2 個並排 ===== */
   .work-grid{
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px;
   }
 
-  /* ===== 起 / 迄 時間並排（日期維持單行) ===== */
+  /* ===== 起 / 迄：同一行 ===== */
   .time-row{
     display: flex;
     gap: 10px;
     flex-wrap: nowrap;
   }
   .time-row .field{
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
   }
 
-}
-  /* ===== 送出 / 清除畫面 → 同一行===== */
+  /* ===== 送出 / 清除：同一行 ===== */
   .action-main{
     display: flex;
     gap: 10px;
-    flex-wrap: nowrap;   /* 🔑 不允許換行 */
+    flex-wrap: nowrap;
   }
   .action-main button{
     flex: 1 1 0;
     min-width: 0;
   }
-}
 
-  /* ===== 筆數 / 全部刪除 / 匯出 CSV → 同一行 ===== */
-@media (max-width: 600px){
-
+  /* ===== 筆數 / 全刪 / 匯出：同一行（含 .right）===== */
   .action-secondary{
     display: flex;
     gap: 8px;
@@ -265,13 +262,11 @@
     flex-wrap: nowrap;
   }
 
-  /* 左邊的按鈕（送出 / 清除） */
   .action-secondary > button{
     flex: 1 1 0;
     min-width: 0;
   }
 
-  /* 右邊那一包（全刪 + 匯出） */
   .action-secondary .right{
     display: flex;
     gap: 8px;
@@ -284,11 +279,11 @@
     min-width: 0;
   }
 
-}
-  /* ===== 假日預設提示詞：手機隱藏 ===== */
+  /* ===== 假日提示隱藏 ===== */
   .holiday-hint{
     display: none;
   }
+
 }
 
   </style>
