@@ -208,22 +208,65 @@
     }
     .toast.show{ opacity:1; transform: translateY(0); }
     @media (max-width: 600px){
-      .wrap{
-        padding:10px;
-      }
-      .header{
-        padding:10px 12px;
-      }
-      .title h1{
-        font-size:15px;
-      }
-      .card{
-        padding:12px;
-      }
-      table{
-        min-width: 760px; /* 手機橫滑表格 */
-      }
-    }
+
+  /* ===== 既有設定（你原本的，保留） ===== */
+  .wrap{
+    padding:10px;
+  }
+  .header{
+    padding:10px 12px;
+  }
+  .title h1{
+    font-size:15px;
+  }
+  .card{
+    padding:12px;
+  }
+  table{
+    min-width: 760px; /* 手機橫滑表格 */
+  }
+
+  /* ===== 1️⃣ 工作內容：11 個選項 → 2 個並排 ===== */
+  .work-grid{
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+
+  /* ===== 2️⃣ 起 / 迄 時間並排（日期維持單行） ===== */
+  .time-row{
+    display: flex;
+    gap: 10px;
+  }
+  .time-row .field{
+    flex: 1;
+  }
+
+  /* ===== 3️⃣ 送出 / 清除畫面 → 同一行 ===== */
+  .action-main{
+    display: flex;
+    gap: 10px;
+  }
+  .action-main button{
+    flex: 1;
+  }
+
+  /* ===== 4️⃣ 筆數 / 全部刪除 / 匯出 CSV → 同一行 ===== */
+  .action-secondary{
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .action-secondary > *{
+    flex: 1;
+    text-align: center;
+  }
+
+  /* ===== 5️⃣ 假日預設提示詞：手機隱藏 ===== */
+  .holiday-hint{
+    display: none;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -274,8 +317,7 @@
 
       <div class="meta">
         <div class="pill">筆數：<span id="count" class="mono">0</span></div>
-        <div class="pill">週六/週日自動預設 08:00–17:00</div>
-      </div>
+
     </div>
 
     <div class="card" style="margin-top:12px;">
@@ -519,33 +561,55 @@
     empId.focus();
   }
 
-  function exportCsv(){
-    const rows = state.rows || [];
-    if (!rows.length) return showToast("沒有資料可匯出");
+ function exportCsv(){
+  const rows = state.rows || [];
+  if (!rows.length) return showToast("沒有資料可匯出");
 
-    const header = ["序","工號","日期","起","迄","時數","工作內容"];
-    const esc = (v) => {
-      const s = String(v ?? "");
-      if (/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
-      return s;
-    };
-    const lines = [header.map(esc).join(",")];
-    rows.forEach((r, i) => {
-      lines.push([i+1, r.empId, r.date, r.start, r.end, r.hours, r.work].map(esc).join(","));
+  const header = ["序","工號","日期","起","迄","時數","工作內容"];
+  const esc = (v) => {
+    const s = String(v ?? "");
+    if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+    return s;
+  };
+
+  const lines = [header.map(esc).join(",")];
+  rows.forEach((r, i) => {
+    lines.push(
+      [i+1, r.empId, r.date, r.start, r.end, r.hours, r.work]
+        .map(esc)
+        .join(",")
+    );
+  });
+
+  const csv = "\ufeff" + lines.join("\n");
+  const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  // ===== 下載（你原本就有）=====
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `FCBU_加班預報_${todayISO()}_${rows.length}筆.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  // ===== 📤 新增：手機分享（iOS / Android）=====
+  if (navigator.share) {
+    const file = new File([blob], a.download, { type:"text/csv" });
+
+    navigator.share({
+      title: "FCBU 加班預報資料",
+      text: "加班預報 CSV",
+      files: [file]
+    }).catch(() => {
+      /* 使用者取消分享，不需處理 */
     });
-
-    const csv = "\ufeff" + lines.join("\n");
-    const blob = new Blob([csv], { type:"text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `FCBU_加班預報_${todayISO()}_${rows.length}筆.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    showToast("已匯出");
   }
+
+  URL.revokeObjectURL(url);
+  showToast("已匯出");
+}
+
 
   function bindEvents(){
     $("btnSubmit").addEventListener("click", submit);
