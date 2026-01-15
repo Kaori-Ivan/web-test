@@ -279,6 +279,32 @@
       }
 
     }
+.emp-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.emp-type{
+  display:flex;
+  gap:4px;
+}
+
+.emp-btn{
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#fff;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.emp-btn.active{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+}
+
   </style>
 </head>
 <body>
@@ -294,11 +320,25 @@
 
     <div class="card" style="margin-top:12px;">
       <div class="row">
-        <div class="field">
-          <label>工號（掃描）</label>
-          <input id="empId" type="text" inputmode="numeric" autocomplete="off" placeholder="請掃工號條碼" />
-        </div>
-      </div>
+<div class="field">
+  <label>工號（掃描）</label>
+
+  <div class="emp-row">
+    <div class="emp-type">
+      <button type="button" class="emp-btn active" data-prefix="C">正職</button>
+      <button type="button" class="emp-btn" data-prefix="CB">派遣</button>
+    </div>
+
+    <input
+      id="empId"
+      type="text"
+      inputmode="numeric"
+      autocomplete="off"
+      placeholder="請輸入或掃描數字工號"
+    />
+  </div>
+</div>
+             </div>
 
       <div class="section-title">工作內容</div>
       <div class="work-grid" id="workGrid"></div>
@@ -380,13 +420,14 @@
     { no: 9,  label: "ARMNF" },
     { no: 10, label: "AECBEL" },
     { no: 11, label: "SSB" },
+    { no: 12, label: "試作" },
   ];
 
   const COLS = [
     [1,2,3],
     [4,5,6],
     [7,8,9],
-    [10,11],
+    [10,11,12],
   ];
 
   const $ = (id) => document.getElementById(id);
@@ -402,6 +443,7 @@
   let state = loadState();
   let activeWorkNo = 1;
   let timeMode = "auto"; // auto | manual
+ let empPrefix = "C"; // 預設：正職
 
   function showToast(msg){
     toast.textContent = msg;
@@ -442,6 +484,25 @@
     const diff = b - a;
     return diff >= 0 ? diff : (24*60 + diff);
   }
+function lunchBreakMinutes(start, end){
+  // 午休區間：12:00–13:00
+  const LUNCH_START = 12 * 60; // 720
+  const LUNCH_END   = 13 * 60; // 780
+
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+
+  let s = sh * 60 + sm;
+  let e = eh * 60 + em;
+
+  // 不處理跨日（假日全日通常不跨）
+  if (e <= s) return 0;
+
+  const overlapStart = Math.max(s, LUNCH_START);
+  const overlapEnd   = Math.min(e, LUNCH_END);
+
+  return Math.max(0, overlapEnd - overlapStart);
+}
 
   function hoursText(mins){
     const h = mins / 60;
@@ -526,7 +587,10 @@
   }
 
   function submit(){
-    const id = empId.value.trim();
+    const raw = empId.value.trim();
+if (!raw) return showToast("請先輸入或掃描工號");
+
+const id = empPrefix + raw; // C1234 / CB1234
     if (!id) return showToast("請先掃工號");
 
     const date = otDate.value || todayISO();
@@ -534,7 +598,16 @@
     const end = endTime.value;
     if (!start || !end) return showToast("請確認起迄時間");
 
-    const mins = minutesBetween(start, end);
+    let mins = minutesBetween(start, end);
+
+// 假日全日加班：扣除 12:00–13:00 午休
+if (isWeekend(date)) {
+  const lunchMins = lunchBreakMinutes(start, end);
+  mins -= lunchMins;
+}
+
+// 防呆：避免變成負數
+if (mins < 0) mins = 0;
     const work = getActiveWorkLabel();
 
     const summary =
@@ -647,6 +720,17 @@
         if (!ok) return;
         deleteRow(id);
       }
+document.querySelectorAll(".emp-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    empPrefix = btn.dataset.prefix;
+
+    document.querySelectorAll(".emp-btn").forEach(b =>
+      b.classList.toggle("active", b === btn)
+    );
+
+    empId.focus();
+  });
+});
     });
 
     otDate.addEventListener("change", () => {
