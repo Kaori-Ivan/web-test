@@ -304,8 +304,21 @@
   color:#fff;
   border-color:var(--accent);
 }
+#qrBox{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:12px;
+}
+
+#qrBox canvas,
+#qrBox img{
+  width:220px;
+  height:220px;
+}
 
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -378,6 +391,7 @@
 
       <div class="meta">
         <div class="pill">筆數：<span id="count" class="mono">0</span></div>
+  <button class="ghost" id="btnQR">生成條碼</button>
 
     </div>
 
@@ -399,6 +413,11 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
+
+<div class="card" id="qrCard" style="margin-top:12px; display:none; text-align:center;">
+  <div id="qrBox"></div>
+</div>
+
     </div>
   </div>
 
@@ -710,6 +729,7 @@ if (mins < 0) mins = 0;
     $("btnClear").addEventListener("click", clearScreen);
     $("btnWipe").addEventListener("click", wipeAll);
     $("btnExport").addEventListener("click", exportCsv);
+$("btnQR").addEventListener("click", generateQR)
 
     document.addEventListener("click", (e) => {
       const el = e.target;
@@ -759,10 +779,37 @@ document.querySelectorAll(".emp-btn").forEach(btn => {
     setTimeout(() => empId.focus(), 50);
   }
 
+
+function generateQR(){
+  const el = document.getElementById("qrBox");
+  if(!el){
+    alert("找不到 #qrBox，請確認HTML有 <div id='qrBox'></div>");
+    return;
+  }
+
+  // 你要放進 QR 的內容（先用固定文字測試，確定會出現）
+  const text = "TEST-QRCode-123";
+
+  // 清空舊的 QR
+  el.innerHTML = "";
+
+  // 生成 QR
+  new QRCode(el, {
+    text: text,
+    width: 220,
+    height: 220,
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+
+
+
   init();
 })();
 
 </script>
+
 </body>
 </html>
 
